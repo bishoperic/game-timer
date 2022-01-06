@@ -1,0 +1,206 @@
+html,
+body {
+	position: relative;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	color: var(--color-text);
+	background-color: var(--color-primary);
+	font-family: 'Nunito', sans-serif;
+}
+
+#svelte {
+	max-width: 100%;
+}
+
+:root {
+	color-scheme: dark;
+	--color-primary: #0d1117;
+	--color-secondary: #161b22;
+	--color-highlight: #58a6ff;
+	--color-highlight-secondary: #77b5fc;
+	--color-background: #010409;
+	--color-border: #30363d;
+	--color-text: #c9d1d9;
+	--color-text-muted: #8b949e;
+	--color-text-highlight: #f0f6fc;
+	--color-drop-shadow: rgba(0, 0, 0, 0.3);
+
+	--border: 1px solid var(--color-border);
+	--border-highlight: 1px solid var(--color-highlight);
+
+	--border-radius: 20px;
+	--gap: 10px;
+}
+
+/* Some styles adapted from Skeleton v2.0.4: https://github.com/dhg/Skeleton */
+
+a {
+	color: var(--color-highlight);
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+
+.button,
+body button,
+input[type='submit'],
+input[type='reset'],
+input[type='button'] {
+	display: inline-block;
+	padding: 0 30px;
+	color: var(--color-text-muted);
+	text-align: center;
+	font-weight: 600;
+	line-height: 36px;
+	text-decoration: none;
+	white-space: nowrap;
+	background-color: transparent;
+	border: var(--border);
+	cursor: pointer;
+	box-sizing: border-box;
+}
+.button:hover,
+button:hover,
+input[type='submit']:hover,
+input[type='reset']:hover,
+input[type='button']:hover,
+.button:focus,
+button:focus,
+input[type='submit']:focus,
+input[type='reset']:focus,
+input[type='button']:focus {
+	color: var(--color-text);
+	border-color: var(--color-highlight);
+	outline: 0;
+}
+
+/* Forms
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+input[type='email'],
+input[type='number'],
+input[type='search'],
+input[type='text'],
+input[type='tel'],
+input[type='url'],
+input[type='password'],
+textarea,
+select {
+	height: 38px;
+	padding: 6px 10px; /* The 6px vertically centers text on FF, ignored by Webkit */
+	background-color: rgba(0, 0, 0, 0.25);
+	border: var(--border);
+	box-shadow: none;
+	box-sizing: border-box;
+}
+/* Removes awkward default styles on some inputs for iOS */
+input[type='email'],
+input[type='number'],
+input[type='search'],
+input[type='text'],
+input[type='tel'],
+input[type='url'],
+input[type='password'],
+textarea {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+
+input[type='email']:focus,
+input[type='number']:focus,
+input[type='search']:focus,
+input[type='text']:focus,
+input[type='tel']:focus,
+input[type='url']:focus,
+input[type='password']:focus,
+textarea:focus,
+select:focus {
+	border: 1px solid var(--color-highlight);
+	outline: 0;
+}
+
+/* Removes annoying buttons on number inputs */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+input[type='number'] {
+	-moz-appearance: textfield;
+}
+
+textarea {
+	min-height: 65px;
+	padding-top: 6px;
+	padding-bottom: 6px;
+}
+
+label,
+legend {
+	display: block;
+	margin-bottom: 0.5rem;
+	font-weight: 600;
+}
+fieldset {
+	padding: 0;
+	border-width: 0;
+}
+
+/* Lists
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+ul {
+	list-style: circle inside;
+}
+ol {
+	list-style: decimal inside;
+}
+ol,
+ul {
+	padding-left: 0;
+	margin-top: 0;
+}
+ul ul,
+ul ol,
+ol ol,
+ol ul {
+	margin: 1.5rem 0 1.5rem 3rem;
+	font-size: 90%;
+}
+li {
+	margin-bottom: 1rem;
+}
+
+/* Code
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+code {
+	padding: 0.2rem 0.5rem;
+	margin: 0 0.2rem;
+	font-size: 90%;
+	white-space: nowrap;
+	background: #f1f1f1;
+	border: 1px solid #e1e1e1;
+}
+pre > code {
+	display: block;
+	padding: 1rem 1.5rem;
+	white-space: pre;
+}
+
+/* Tables
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+th,
+td {
+	padding: 12px 15px;
+	text-align: left;
+	border-bottom: 1px solid #e1e1e1;
+}
+th:first-child,
+td:first-child {
+	padding-left: 0;
+}
+th:last-child,
+td:last-child {
+	padding-right: 0;
+}
