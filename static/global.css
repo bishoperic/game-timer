@@ -9,10 +9,6 @@ body {
 	font-family: 'Nunito', sans-serif;
 }
 
-#svelte {
-	max-width: 100%;
-}
-
 :root {
 	color-scheme: dark;
 	--color-primary: #0d1117;
