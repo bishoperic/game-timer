@@ -1,30 +1,32 @@
-<script>
+<script lang="ts">
 	import { flip } from 'svelte/animate';
 	import { dndzone } from 'svelte-dnd-action';
 	import { XCircleIcon } from 'svelte-feather-icons';
 	import { Buffer } from 'buffer';
+	import type { TimerSettings } from '$lib/timer-settings';
 
 	const dropTargetStyle = { outline: 'var(--border)', 'border-radius': 'var(--border-radius)' };
 	function handleDndConsider(e) {
-		items = e.detail.items;
+		players = e.detail.items;
 	}
 	function handleDndFinalize(e) {
-		items = e.detail.items;
+		players = e.detail.items;
 	}
 
 	function addPlayer() {
-		items = [...items, { id: Date.now(), name: '' }];
+		players = [...players, { id: Date.now(), name: '' }];
 	}
 
-	let items = [
+	let players = [
 		{ id: Date.now(), name: '' },
 		{ id: Date.now() + 1, name: '' }
 	];
-	let timeInMinutes = 0;
+	let turnLength = 0;
 
+	let data: TimerSettings;
 	$: data = {
-		items,
-		timeInMinutes
+		players,
+		turnLength
 	};
 
 	$: encodedData = Buffer.from(JSON.stringify(data), 'ascii').toString('base64');
@@ -34,11 +36,11 @@
 <button on:click={addPlayer}>Add Player</button>
 
 <section
-	use:dndzone={{ items, flipDurationMs: 300, dropTargetStyle }}
+	use:dndzone={{ items: players, flipDurationMs: 300, dropTargetStyle }}
 	on:consider={handleDndConsider}
 	on:finalize={handleDndFinalize}
 >
-	{#each items as item, i (item.id)}
+	{#each players as item, i (item.id)}
 		<div class="player" animate:flip={{ duration: 300 }}>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -61,8 +63,8 @@
 			<input type="text" placeholder={'Player ' + (i + 1)} bind:value={item.name} />
 			<button
 				on:click={() => {
-					items.splice(i, 1);
-					items = items;
+					players.splice(i, 1);
+					players = players;
 				}}
 			>
 				<XCircleIcon size="20" />
@@ -72,7 +74,7 @@
 </section>
 
 <label for="time-per-turn">Time per turn (in minutes)</label>
-<input type="number" id="time-per-turn" bind:value={timeInMinutes} />
+<input type="number" id="time-per-turn" bind:value={turnLength} />
 
 <button><a href={`/timer?data=${encodedData}`}>Next</a></button>
 

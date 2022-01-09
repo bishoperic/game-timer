@@ -11,5 +11,6 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		max-width: 700px;
 	}
 </style>
