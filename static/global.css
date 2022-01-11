@@ -10,13 +10,6 @@ body {
 	font-family: 'Nunito', sans-serif;
 }
 
-#svelte {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	/* justify-content: center; */
-}
-
 :root {
 	color-scheme: dark;
 	--color-primary: #0d1117;
@@ -30,8 +23,8 @@ body {
 	--color-text-highlight: #f0f6fc;
 	--color-drop-shadow: rgba(0, 0, 0, 0.3);
 
-	--border: 1px solid var(--color-border);
-	--border-highlight: 1px solid var(--color-highlight);
+	--border: 4px solid var(--color-border);
+	--border-highlight: 4px solid var(--color-highlight);
 
 	--border-radius: 20px;
 	--gap: 10px;
@@ -54,7 +47,7 @@ input[type='reset'],
 input[type='button'] {
 	display: inline-block;
 	padding: 0 30px;
-	color: var(--color-text-muted);
+	color: var(--color-text);
 	text-align: center;
 	font-weight: 600;
 	line-height: 36px;
@@ -75,7 +68,7 @@ button:focus,
 input[type='submit']:focus,
 input[type='reset']:focus,
 input[type='button']:focus {
-	color: var(--color-text);
+	color: var(--color-text-muted);
 	border-color: var(--color-highlight);
 	outline: 0;
 }
@@ -121,7 +114,7 @@ input[type='url']:focus,
 input[type='password']:focus,
 textarea:focus,
 select:focus {
-	border: 1px solid var(--color-highlight);
+	border: var(--border-highlight);
 	outline: 0;
 }
 
