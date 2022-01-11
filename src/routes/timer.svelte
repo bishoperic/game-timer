@@ -85,19 +85,19 @@
 		</h1>
 	{/key}
 </header>
-{#key currentPlayer}
-	<PieProgressBar
-		bind:value={timer.time}
-		bind:max={turnLength}
-		width="400px"
-		fontSize="100px"
-		borderThickness="16px"
-		color="var(--color-highlight)"
-		emptyColor="var(--color-secondary)"
-	>
+<PieProgressBar
+	bind:value={timer.time}
+	bind:max={turnLength}
+	width="400px"
+	fontSize="100px"
+	borderThickness="16px"
+	color="var(--color-highlight)"
+	emptyColor="var(--color-secondary)"
+>
+	{#key currentPlayer}
 		<span in:fade>{minutes}:{seconds}</span>
-	</PieProgressBar>
-{/key}
+	{/key}
+</PieProgressBar>
 <button on:click={nextPlayer} in:fade>Next Player</button>
 <button
 	on:click={() => {
