@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { flip } from 'svelte/animate';
 	import { dndzone } from 'svelte-dnd-action';
-	import { PlusCircleIcon, XCircleIcon } from 'svelte-feather-icons';
-	import type { TimerSettings } from '$lib/timer-settings';
+	import { PlusCircleIcon, XCircleIcon, XIcon } from 'svelte-feather-icons';
+	import { createEventDispatcher } from 'svelte';
+	import { slide } from 'svelte/transition';
+
+	const dispatch = createEventDispatcher();
 
 	const dropTargetStyle = { outline: 'var(--border)', 'border-radius': 'var(--border-radius)' };
 
@@ -17,25 +20,32 @@
 		players = [...players, { id: Date.now(), name: '' }];
 	}
 
-	export let players = [
+	let players = [
 		{ id: Date.now(), name: '' },
 		{ id: Date.now() + 1, name: '' }
 	];
-	export let turnLength = 0;
-	$: turnLength = turnLengthMinutes * 60;
-
-	let turnLengthMinutes = 0;
+	let turnLength = 0;
 
 	export let visible = false;
+
+	function closeMenu() {
+		visible = false;
+		// multiply by 60e3 to convert minutes to milliseconds
+		dispatch('update-settings', { players, turnLength: turnLength * 60e3 });
+	}
 </script>
 
 {#if visible}
-	<section>
+	<section transition:slide={{ duration: 300 }}>
+		<button class="close-button" on:click={closeMenu}>
+			<XIcon size="48" />
+		</button>
+
 		<h1>Configure Timer</h1>
 
 		<div class="turn-length">
 			<label for="time-per-turn">Turn length (minutes)</label>
-			<input type="number" id="time-per-turn" bind:value={turnLengthMinutes} />
+			<input type="number" id="time-per-turn" bind:value={turnLength} />
 		</div>
 
 		<hr />
@@ -94,13 +104,22 @@
 		top: 0;
 		left: 0;
 		right: 0;
-		bottom: calc(0px + 112px);
+		bottom: 0;
 		background-color: var(--color-primary);
-		border: var(--border);
-		border-color: var(--color-secondary);
 		z-index: 1;
 		overflow: scroll;
 	}
+
+	.close-button {
+		position: absolute;
+		top: 0;
+		right: 0;
+		padding: 0.5rem;
+
+		border: none;
+		line-height: 1;
+	}
+
 	hr {
 		width: 50%;
 		border: 0;

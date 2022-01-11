@@ -1,48 +1,44 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import type { TimerSettings } from '$lib/timer-settings';
 	import PieProgressBar from '../components/pie-progress-bar.svelte';
 	import { PauseIcon, PlayIcon, SettingsIcon, SkipForwardIcon } from 'svelte-feather-icons';
 	import TimerOptions from '../components/timer-options.svelte';
 
 	let turnLength = 300;
+
 	let players = [
 		{ id: Date.now(), name: '' },
 		{ id: Date.now() + 1, name: '' }
 	];
-
-	function handleKeydown(event) {
-		let key = event.key;
-
-		switch (key) {
-			case ' ':
-				timer.toggle();
-				break;
-		}
-	}
 
 	let timer = {
 		time: turnLength,
 		ticking: false,
 		timerReference: null,
 		start(inputTime: number = 0) {
-			if (inputTime > 0) {
-				timer.time = inputTime;
-			}
 			if (timer.time <= 0) {
 				timer.time = turnLength;
+
+				return;
+			}
+			if (inputTime > 0) {
+				timer.time = inputTime;
 			}
 
 			timer.ticking = true;
 
-			timer.timerReference = setInterval(() => {
-				timer.time -= 1;
-				timer = timer;
+			let prev = Date.now();
+			timer.timerReference = setInterval(function () {
+				let delta = Date.now() - prev; // milliseconds elapsed since start
+				timer.time -= delta;
 
-				if (this.time <= 0) {
-					this.stop();
+				prev = Date.now();
+
+				if (timer.time <= 0) {
+					timer.time = 0;
+					timer.stop();
 				}
-			}, 1000);
+			}, 1000); // update about every second
 		},
 		stop() {
 			timer.ticking = false;
@@ -72,20 +68,24 @@
 		}
 	}
 
+	function updateSettings(e) {
+		turnLength = e.detail.turnLength;
+		players = e.detail.players;
+		timer.reset();
+	}
+
 	let currentPlayer = 0;
 	let optionsVisible = false;
 
-	$: minutes = Math.floor(timer.time / 60);
+	$: minutes = Math.floor(timer.time / 1000 / 60);
 	$: seconds =
-		Math.floor(timer.time - minutes * 60) < 10
-			? '0' + Math.floor(timer.time - minutes * 60)
-			: Math.floor(timer.time - minutes * 60);
+		Math.round(timer.time / 1000 - minutes * 60) < 10
+			? '0' + Math.round(timer.time / 1000 - minutes * 60)
+			: Math.round(timer.time / 1000 - minutes * 60);
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
-
 <main>
-	<TimerOptions bind:visible={optionsVisible} bind:turnLength bind:players />
+	<TimerOptions bind:visible={optionsVisible} on:update-settings={updateSettings} />
 
 	{#key currentPlayer}
 		<header in:fly={{ y: -25 }}>
