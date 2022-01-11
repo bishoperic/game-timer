@@ -26,7 +26,7 @@
 	let data: TimerSettings;
 	$: data = {
 		players,
-		turnLength
+		turnLength: turnLength * 60
 	};
 
 	$: encodedData = Buffer.from(JSON.stringify(data), 'ascii').toString('base64');

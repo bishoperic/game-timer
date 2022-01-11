@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { fade } from 'svelte/transition';
 	import type { TimerSettings } from '$lib/timer-settings';
 	import { Buffer } from 'buffer';
+	import PieProgressBar from '../components/pie-progress-bar.svelte';
+	import { onMount } from 'svelte';
 
 	function getTimerSettings() {
 		let timerData = $page.url.searchParams.get('data');
@@ -14,18 +17,21 @@
 	let { turnLength, players } = getTimerSettings();
 
 	let timer = {
-		time: turnLength * 60,
+		time: turnLength,
 		ticking: false,
 		timerReference: null,
 		start(inputTime: number = 0) {
 			if (inputTime > 0) {
-				this.time = inputTime;
+				timer.time = inputTime;
+			}
+			if (timer.time <= 0) {
+				timer.time = turnLength;
 			}
 
-			this.ticking = true;
+			timer.ticking = true;
 
-			this.timerReference = setInterval(() => {
-				this.time--;
+			timer.timerReference = setInterval(() => {
+				timer.time -= 1;
 				timer = timer;
 
 				if (this.time <= 0) {
@@ -34,8 +40,8 @@
 			}, 1000);
 		},
 		stop() {
+			timer.ticking = false;
 			clearInterval(this.timerReference);
-			this.ticking = false;
 		},
 		toggle() {
 			if (this.ticking) {
@@ -44,11 +50,24 @@
 				this.start();
 			}
 		},
-
 		reset() {
-			this.time = turnLength * 60;
+			timer.time = turnLength;
+			this.stop();
 		}
 	};
+
+	function nextPlayer() {
+		timer.reset();
+
+		// loop back to first player if we're at the end
+		if (currentPlayer === players.length - 1) {
+			currentPlayer = 0;
+		} else {
+			currentPlayer++;
+		}
+
+		console.log(timer.ticking);
+	}
 
 	let currentPlayer = 0;
 
@@ -57,29 +76,35 @@
 		Math.floor(timer.time - minutes * 60) < 10
 			? '0' + Math.floor(timer.time - minutes * 60)
 			: Math.floor(timer.time - minutes * 60);
-
-	function nextPlayer() {
-		timer.reset();
-		timer.start();
-
-		// loop back to first player if we're at the end
-		if (currentPlayer === players.length - 1) {
-			currentPlayer = 0;
-		} else {
-			currentPlayer++;
-		}
-	}
 </script>
 
-<h1>{players[currentPlayer].name}'s Turn</h1>
-<h2 class="timer">{minutes}:{seconds}</h2>
-<button on:click={nextPlayer}>Next Player</button>
+<header class="current-player">
+	{#key currentPlayer}
+		<h1 in:fade>
+			{players[currentPlayer].name}'s Turn
+		</h1>
+	{/key}
+</header>
+{#key currentPlayer}
+	<PieProgressBar
+		bind:value={timer.time}
+		bind:max={turnLength}
+		width="400px"
+		fontSize="100px"
+		borderThickness="16px"
+		color="var(--color-highlight)"
+		emptyColor="var(--color-secondary)"
+	>
+		<span in:fade>{minutes}:{seconds}</span>
+	</PieProgressBar>
+{/key}
+<button on:click={nextPlayer} in:fade>Next Player</button>
 <button
 	on:click={() => {
 		timer.toggle();
 	}}
 >
-	{#if true}
+	{#if timer.ticking}
 		Pause
 	{:else}
 		Play
@@ -92,5 +117,14 @@
 		font-weight: bold;
 		text-align: center;
 		margin: 0;
+	}
+	.current-player {
+		max-height: 64px;
+		overflow: hidden;
+	}
+	h1 {
+		line-height: 1;
+		margin: 16px 0;
+		overflow: scroll;
 	}
 </style>
