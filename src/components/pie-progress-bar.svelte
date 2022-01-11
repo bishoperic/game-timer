@@ -79,6 +79,8 @@
 	}
 	.ring {
 		position: relative;
+		width: var(--width);
+		aspect-ratio: 1;
 	}
 	.ring:before {
 		content: '';
