@@ -11,7 +11,7 @@
 	export let emptyColor = '#ccc';
 
 	$: {
-		easedValue.set((value / max) * 100);
+		easedValue.set((value / max || 1) * 100);
 	}
 
 	$: easedValue = tweened(0, {

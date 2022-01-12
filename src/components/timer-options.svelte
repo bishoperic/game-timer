@@ -33,6 +33,10 @@
 		// multiply by 60e3 to convert minutes to milliseconds
 		dispatch('update-options', { players, turnLength: turnLength * 60e3 });
 	}
+	function clampTurnLength(e) {
+		e.target.value = Math.max(0, e.target.value);
+		turnLength = e.target.value;
+	}
 </script>
 
 {#if visible}
@@ -45,7 +49,7 @@
 
 		<div class="turn-length">
 			<label for="time-per-turn">Turn length (minutes)</label>
-			<input type="number" id="time-per-turn" bind:value={turnLength} />
+			<input type="number" id="time-per-turn" bind:value={turnLength} on:blur={clampTurnLength} />
 		</div>
 
 		<hr />
@@ -81,6 +85,7 @@
 					<input type="text" placeholder={'Player ' + (i + 1)} bind:value={item.name} />
 					<button
 						on:click={() => {
+							if (players.length <= 2) return;
 							players.splice(i, 1);
 							players = players;
 						}}
