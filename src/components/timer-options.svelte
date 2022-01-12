@@ -20,18 +20,18 @@
 		players = [...players, { id: Date.now(), name: '' }];
 	}
 
-	let players = [
+	export let turnLength = 0;
+	export let players = [
 		{ id: Date.now(), name: '' },
 		{ id: Date.now() + 1, name: '' }
 	];
-	let turnLength = 0;
 
 	export let visible = false;
 
 	function closeMenu() {
 		visible = false;
 		// multiply by 60e3 to convert minutes to milliseconds
-		dispatch('update-settings', { players, turnLength: turnLength * 60e3 });
+		dispatch('update-options', { players, turnLength: turnLength * 60e3 });
 	}
 </script>
 

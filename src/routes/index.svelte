@@ -3,21 +3,15 @@
 	import PieProgressBar from '../components/pie-progress-bar.svelte';
 	import { PauseIcon, PlayIcon, SettingsIcon, SkipForwardIcon } from 'svelte-feather-icons';
 	import TimerOptions from '../components/timer-options.svelte';
-
-	let turnLength = 300;
-
-	let players = [
-		{ id: Date.now(), name: '' },
-		{ id: Date.now() + 1, name: '' }
-	];
+	import { turnLength, players } from '../lib/stores';
 
 	let timer = {
-		time: turnLength,
+		time: $turnLength,
 		ticking: false,
 		timerReference: null,
 		start(inputTime: number = 0) {
 			if (timer.time <= 0) {
-				timer.time = turnLength;
+				timer.time = $turnLength;
 
 				return;
 			}
@@ -52,7 +46,7 @@
 			}
 		},
 		reset() {
-			timer.time = turnLength;
+			timer.time = $turnLength;
 			this.stop();
 		}
 	};
@@ -61,7 +55,7 @@
 		timer.reset();
 
 		// loop back to first player if we're at the end
-		if (currentPlayer === players.length - 1) {
+		if (currentPlayer === $players.length - 1) {
 			currentPlayer = 0;
 		} else {
 			currentPlayer++;
@@ -69,8 +63,8 @@
 	}
 
 	function updateSettings(e) {
-		turnLength = e.detail.turnLength;
-		players = e.detail.players;
+		$turnLength = e.detail.turnLength;
+		$players = e.detail.players;
 		timer.reset();
 	}
 
@@ -85,22 +79,27 @@
 </script>
 
 <main>
-	<TimerOptions bind:visible={optionsVisible} on:update-settings={updateSettings} />
+	<TimerOptions
+		bind:visible={optionsVisible}
+		on:update-options={updateSettings}
+		turnLength={$turnLength / 60e3}
+		players={$players}
+	/>
 
 	{#key currentPlayer}
 		<header in:fly={{ y: -25 }}>
 			<h1>
-				{players[currentPlayer].name}'s Turn
+				{$players[currentPlayer].name}'s Turn
 			</h1>
 			<h2>
-				Next up: {players[currentPlayer == players.length - 1 ? 0 : currentPlayer + 1].name}
+				Next up: {$players[currentPlayer == $players.length - 1 ? 0 : currentPlayer + 1].name}
 			</h2>
 		</header>
 	{/key}
 
 	<PieProgressBar
 		bind:value={timer.time}
-		bind:max={turnLength}
+		bind:max={$turnLength}
 		width="400px"
 		fontSize="100px"
 		borderThickness="16px"
