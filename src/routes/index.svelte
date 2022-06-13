@@ -1,17 +1,28 @@
-<script lang="ts">
+<script>
+	import { browser } from '$app/env';
 	import { fly } from 'svelte/transition';
 	import PieProgressBar from '../components/pie-progress-bar.svelte';
-	import { PauseIcon, PlayIcon, SettingsIcon, SkipForwardIcon } from 'svelte-feather-icons';
-	import TimerOptions from '../components/timer-options.svelte';
-	import { turnLength, players } from '../lib/stores';
+	import {
+		PauseIcon,
+		SquareIcon,
+		PlayIcon,
+		SettingsIcon,
+		SkipForwardIcon
+	} from 'svelte-feather-icons';
+	import PlayerSelection from '../components/player-selection.svelte';
+	import Modal from '../components/modal.svelte';
+	import Form from '../components/form.svelte';
+	import { settings } from '../lib/stores';
 
 	let timer = {
-		time: $turnLength,
+		time: $settings.turnLength,
 		ticking: false,
 		timerReference: null,
-		start(inputTime: number = 0) {
+		ended: false,
+		beepSound: browser ? new Audio('/audio/timer-beep.mp3') : null,
+		start(inputTime = 0) {
 			if (timer.time <= 0) {
-				timer.time = $turnLength;
+				timer.time = $settings.turnLength;
 
 				return;
 			}
@@ -29,6 +40,9 @@
 				prev = Date.now();
 
 				if (timer.time <= 0) {
+					timer.ended = true;
+					timer.startBeeping();
+
 					timer.time = 0;
 					timer.stop();
 				}
@@ -39,15 +53,35 @@
 			clearInterval(this.timerReference);
 		},
 		toggle() {
-			if (this.ticking) {
+			if (timer.ticking) {
 				this.stop();
+			} else if (timer.ended) {
+				timer.ended = false;
+				timer.stopBeeping();
+
+				this.start();
 			} else {
 				this.start();
 			}
 		},
 		reset() {
-			timer.time = $turnLength;
+			timer.ended = false;
+			timer.stopBeeping();
+
+			timer.time = $settings.turnLength;
 			this.stop();
+		},
+		startBeeping() {
+			if ($settings.muteAlarm) {
+				return;
+			}
+
+			timer.beepSound.loop = true;
+			timer.beepSound.play();
+		},
+		stopBeeping() {
+			timer.beepSound.pause();
+			timer.beepSound.currentTime = 0;
 		}
 	};
 
@@ -55,7 +89,7 @@
 		timer.reset();
 
 		// loop back to first player if we're at the end
-		if (currentPlayer === $players.length - 1) {
+		if (currentPlayer === $settings.players.length - 1) {
 			currentPlayer = 0;
 		} else {
 			currentPlayer++;
@@ -63,13 +97,22 @@
 	}
 
 	function updateSettings(e) {
-		$turnLength = e.detail.turnLength;
-		$players = e.detail.players;
+		$settings.turnLength = e.detail.turnLength ?? $settings.turnLength;
+		$settings.players = JSON.parse(e.detail.players) ?? $settings.players;
+		let muteAlarm = (e.detail.muteAlarm ?? $settings.muteAlarm) === 'true' ? true : false;
+		$settings.muteAlarm = muteAlarm;
+
+		if ($settings.players.length - 1 < currentPlayer) {
+			currentPlayer = 0;
+		}
+
 		timer.reset();
 	}
 
 	let currentPlayer = 0;
-	let optionsVisible = false;
+
+	let settingsModal;
+	let settingsForm;
 
 	$: minutes = Math.floor(timer.time / 1000 / 60);
 	$: seconds =
@@ -79,32 +122,69 @@
 </script>
 
 <main>
-	<TimerOptions
-		bind:visible={optionsVisible}
-		on:update-options={updateSettings}
-		turnLength={$turnLength / 60e3}
-		players={$players}
-	/>
+	<Modal
+		title="Timer Settings"
+		bind:modal={settingsModal}
+		on:hide={() => {
+			settingsForm.save();
+		}}
+	>
+		<Form on:save={updateSettings} bind:form={settingsForm}>
+			<div class="list">
+				<div class="input">
+					<label for="turnLength">Turn length (minutes)</label>
+
+					<input
+						type="number"
+						name="turnLength"
+						id="turnLength"
+						value={$settings.turnLength}
+						on:blur={(e) => {
+							// @ts-ignore
+							e.detail = Math.abs(e.detail);
+						}}
+					/>
+				</div>
+
+				<div class="checkbox">
+					<label for="muteAlarm">Mute Alarm?</label>
+					<input type="hidden" name="muteAlarm" value={false} />
+					<input
+						type="checkbox"
+						name="muteAlarm"
+						id="muteAlarm"
+						checked={!$settings.muteAlarm ? null : true}
+						value={true}
+					/>
+				</div>
+			</div>
+
+			<PlayerSelection players={$settings.players} />
+		</Form>
+	</Modal>
 
 	{#key currentPlayer}
 		<header in:fly={{ y: -25 }}>
 			<h1>
-				{$players[currentPlayer].name}'s Turn
+				{$settings.players[currentPlayer].name}'s Turn
 			</h1>
 			<h2>
-				Next up: {$players[currentPlayer == $players.length - 1 ? 0 : currentPlayer + 1].name}
+				Next up: {$settings.players[
+					currentPlayer == $settings.players.length - 1 ? 0 : currentPlayer + 1
+				].name}
 			</h2>
 		</header>
 	{/key}
 
 	<PieProgressBar
 		bind:value={timer.time}
-		bind:max={$turnLength}
+		bind:max={$settings.turnLength}
 		width="400px"
 		fontSize="100px"
 		borderThickness="16px"
-		color="var(--color-highlight)"
+		color={!timer.ended ? 'var(--color-highlight)' : 'red'}
 		emptyColor="var(--color-secondary)"
+		flashing={timer.ended}
 	>
 		<span>{minutes}:{seconds}</span>
 	</PieProgressBar>
@@ -112,7 +192,7 @@
 	<menu>
 		<button
 			on:click={() => {
-				optionsVisible = !optionsVisible;
+				settingsModal.show();
 			}}
 		>
 			<SettingsIcon size="60" />
@@ -126,6 +206,8 @@
 		>
 			{#if timer.ticking}
 				<PauseIcon size="64" />
+			{:else if timer.ended}
+				<SquareIcon size="64" />
 			{:else}
 				<PlayIcon size="64" />
 			{/if}
@@ -137,9 +219,9 @@
 
 <style>
 	main {
-		max-width: 700px;
+		max-width: 500px;
 		margin: 0 auto;
-		position: relative;
+		padding: 2rem 0;
 
 		display: flex;
 		flex-direction: column;
@@ -150,7 +232,7 @@
 	header {
 		text-align: center;
 		line-height: 1;
-		margin: 2rem 0 1rem;
+		margin: 0 0 1rem;
 	}
 	header h1 {
 		font-size: 3rem;
@@ -185,5 +267,99 @@
 		padding: 0.25rem;
 		line-height: 1;
 		border: none;
+	}
+
+	.list {
+		display: flex;
+		flex-direction: column;
+		border-radius: calc(var(--border-radius) / 2);
+		border: var(--border);
+		margin-bottom: 1rem;
+		overflow: auto;
+	}
+	.list > *:not(:last-child) {
+		border-bottom: var(--border);
+	}
+
+	.input,
+	.checkbox {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		position: relative;
+		padding-left: 1rem;
+		min-height: 3rem;
+	}
+	.input input,
+	.checkbox input[type='checkbox'] {
+		margin-left: auto;
+	}
+	.input input {
+		height: calc(3rem - 1px);
+		width: 6rem;
+		font-size: 1.2rem;
+		border: none;
+		background-color: var(--color-secondary);
+		text-align: center;
+
+		position: relative;
+	}
+	.checkbox input[type='checkbox'] {
+		margin-right: 1rem;
+	}
+	.input label,
+	.checkbox label {
+		margin: 0.5rem 0;
+	}
+
+	input[type='checkbox'] {
+		/* Add if not using autoprefixer */
+		-webkit-appearance: none;
+		/* Remove most all native input styles */
+		appearance: none;
+		/* For iOS < 15 */
+		background-color: var(--form-background);
+		/* Not removed via appearance */
+		margin: 0;
+
+		font: inherit;
+		color: currentColor;
+		width: 1.15em;
+		height: 1.15em;
+		border: 0.15em solid currentColor;
+		border-radius: 0.15em;
+		transform: translateY(-0.075em);
+
+		display: grid;
+		place-content: center;
+	}
+
+	input[type='checkbox']::before {
+		content: '';
+		width: 0.65em;
+		height: 0.65em;
+		clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+		transform: scale(0);
+		transform-origin: bottom left;
+		transition: 120ms transform ease-in-out;
+		box-shadow: inset 1em 1em var(--form-control-color);
+		/* Windows High Contrast Mode */
+		background-color: CanvasText;
+	}
+
+	input[type='checkbox']:checked::before {
+		transform: scale(1);
+	}
+
+	input[type='checkbox']:focus {
+		outline: max(2px, 0.15em) solid currentColor;
+		outline-offset: max(2px, 0.15em);
+	}
+
+	input[type='checkbox']:disabled {
+		--form-control-color: var(--form-control-disabled);
+
+		color: var(--form-control-disabled);
+		cursor: not-allowed;
 	}
 </style>
