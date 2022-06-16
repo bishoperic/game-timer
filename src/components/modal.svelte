@@ -58,7 +58,7 @@
 		left: 0;
 		z-index: 1;
 
-		background-color: rgba(13, 17, 23, 0.95);
+		background-color: rgba(1, 4, 9, 0.8);
 	}
 	.modal-container {
 		position: absolute;

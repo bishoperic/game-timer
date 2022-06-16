@@ -13,6 +13,7 @@
 	import Modal from '../components/modal.svelte';
 	import Form from '../components/form.svelte';
 	import { settings } from '../lib/stores';
+	import ToggleSwitch from '../components/toggle-switch.svelte';
 
 	let timer = {
 		time: $settings.turnLength,
@@ -148,14 +149,7 @@
 
 				<div class="checkbox">
 					<label for="muteAlarm">Mute Alarm?</label>
-					<input type="hidden" name="muteAlarm" value={false} />
-					<input
-						type="checkbox"
-						name="muteAlarm"
-						id="muteAlarm"
-						checked={!$settings.muteAlarm ? null : true}
-						value={true}
-					/>
+					<ToggleSwitch class="switch" name="muteAlarm" value={$settings.muteAlarm} />
 				</div>
 			</div>
 
@@ -291,7 +285,7 @@
 		min-height: 3rem;
 	}
 	.input input,
-	.checkbox input[type='checkbox'] {
+	.checkbox :global(.switch) {
 		margin-left: auto;
 	}
 	.input input {
@@ -304,62 +298,18 @@
 
 		position: relative;
 	}
-	.checkbox input[type='checkbox'] {
-		margin-right: 1rem;
+	.checkbox :global(.switch) {
+		margin-right: 0.5rem;
+
+		--size: 28px;
+		--color-background: var(--color-secondary);
+		--color-main: var(--color-highlight);
+		--color-unchecked: #78829d;
+		--border-color: var(--color-border);
 	}
+
 	.input label,
 	.checkbox label {
 		margin: 0.5rem 0;
-	}
-
-	input[type='checkbox'] {
-		/* Add if not using autoprefixer */
-		-webkit-appearance: none;
-		/* Remove most all native input styles */
-		appearance: none;
-		/* For iOS < 15 */
-		background-color: var(--form-background);
-		/* Not removed via appearance */
-		margin: 0;
-
-		font: inherit;
-		color: currentColor;
-		width: 1.15em;
-		height: 1.15em;
-		border: 0.15em solid currentColor;
-		border-radius: 0.15em;
-		transform: translateY(-0.075em);
-
-		display: grid;
-		place-content: center;
-	}
-
-	input[type='checkbox']::before {
-		content: '';
-		width: 0.65em;
-		height: 0.65em;
-		clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
-		transform: scale(0);
-		transform-origin: bottom left;
-		transition: 120ms transform ease-in-out;
-		box-shadow: inset 1em 1em var(--form-control-color);
-		/* Windows High Contrast Mode */
-		background-color: CanvasText;
-	}
-
-	input[type='checkbox']:checked::before {
-		transform: scale(1);
-	}
-
-	input[type='checkbox']:focus {
-		outline: max(2px, 0.15em) solid currentColor;
-		outline-offset: max(2px, 0.15em);
-	}
-
-	input[type='checkbox']:disabled {
-		--form-control-color: var(--form-control-disabled);
-
-		color: var(--form-control-disabled);
-		cursor: not-allowed;
 	}
 </style>
