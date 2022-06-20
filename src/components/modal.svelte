@@ -20,9 +20,9 @@
 
 	$: {
 		if (open && !previousState) {
-			dispatch('show', null);
+			dispatch('show', modal);
 		} else if (!open && previousState) {
-			dispatch('hide', null);
+			dispatch('hide', modal);
 		}
 		previousState = open;
 	}

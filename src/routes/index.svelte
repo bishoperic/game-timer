@@ -14,6 +14,7 @@
 	import Form from '../components/form.svelte';
 	import { settings } from '../lib/stores';
 	import ToggleSwitch from '../components/toggle-switch.svelte';
+	import TimeSelection from '../components/time-selection.svelte';
 
 	let timer = {
 		time: $settings.turnLength,
@@ -114,6 +115,7 @@
 
 	let settingsModal;
 	let settingsForm;
+	let timeSelectionModal;
 
 	$: minutes = Math.floor(timer.time / 1000 / 60);
 	$: seconds =
@@ -126,7 +128,7 @@
 	<Modal
 		title="Timer Settings"
 		bind:modal={settingsModal}
-		on:hide={() => {
+		on:hide={(e) => {
 			settingsForm.save();
 		}}
 	>
@@ -134,17 +136,7 @@
 			<div class="list">
 				<div class="input">
 					<label for="turnLength">Turn length (minutes)</label>
-
-					<input
-						type="number"
-						name="turnLength"
-						id="turnLength"
-						value={$settings.turnLength}
-						on:blur={(e) => {
-							// @ts-ignore
-							e.detail = Math.abs(e.detail);
-						}}
-					/>
+					<TimeSelection name="turnLength" value={$settings.turnLength} class="spacing" />
 				</div>
 
 				<div class="checkbox">
@@ -304,12 +296,16 @@
 		--size: 28px;
 		--color-background: var(--color-secondary);
 		--color-main: var(--color-highlight);
-		--color-unchecked: #78829d;
+		--color-unchecked: #92959f;
 		--border-color: var(--color-border);
 	}
 
 	.input label,
 	.checkbox label {
 		margin: 0.5rem 0;
+	}
+
+	:global(.spacing) {
+		margin-left: auto;
 	}
 </style>
