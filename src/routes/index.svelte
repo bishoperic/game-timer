@@ -135,12 +135,12 @@
 		<Form on:save={updateSettings} bind:form={settingsForm}>
 			<div class="list">
 				<div class="input">
-					<label for="turnLength">Turn length (minutes)</label>
+					<label for="turnLength">Turn Length</label>
 					<TimeSelection name="turnLength" value={$settings.turnLength} class="spacing" />
 				</div>
 
 				<div class="checkbox">
-					<label for="muteAlarm">Mute Alarm?</label>
+					<label for="muteAlarm">Mute Alarm</label>
 					<ToggleSwitch class="switch" name="muteAlarm" value={$settings.muteAlarm} />
 				</div>
 			</div>
@@ -276,11 +276,11 @@
 		padding-left: 1rem;
 		min-height: 3rem;
 	}
-	.input input,
+	/* .input input, */
 	.checkbox :global(.switch) {
 		margin-left: auto;
 	}
-	.input input {
+	/* .input input {
 		height: calc(3rem - 1px);
 		width: 6rem;
 		font-size: 1.2rem;
@@ -289,7 +289,7 @@
 		text-align: center;
 
 		position: relative;
-	}
+	} */
 	.checkbox :global(.switch) {
 		margin-right: 0.5rem;
 

@@ -4,10 +4,12 @@ export function selectOnFocus(node): SvelteActionReturnType {
 	};
 
 	node.addEventListener('focus', selectOnFocus);
+	node.addEventListener('select', selectOnFocus);
 
 	return {
 		destroy: () => {
 			node.removeEventListener('focus', selectOnFocus);
+			node.addEventListener('select', selectOnFocus);
 		}
 	};
 }

@@ -87,8 +87,7 @@
 		margin: 0;
 		border-radius: calc(var(--border-radius) / 2);
 	}
-	.input input[type='number'],
-	.input input[type='text'] {
+	.input input[type='number'] {
 		margin: 0;
 		padding: 0;
 		width: 100%;
