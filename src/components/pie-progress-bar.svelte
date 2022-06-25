@@ -9,6 +9,7 @@
 	export let width = '100px';
 	export let fontSize = '24px';
 	export let emptyColor = '#ccc';
+	export let flashing = false;
 
 	$: {
 		easedValue.set((value / max || 1) * 100);
@@ -27,6 +28,7 @@
 >
 	<div
 		class="pie"
+		class:flashing
 		style="--progress: {$easedValue}; --color: {color}; --border-thickness: {borderThickness}; --width: {width}; --font-size: {fontSize}; --color-empty: {emptyColor};"
 	>
 		<slot />
@@ -77,6 +79,35 @@
 		background: var(--color);
 		transform: rotate(calc(var(--progress) * 3.6deg)) translateY(calc(50% - var(--width) / 2));
 	}
+
+	@keyframes flash {
+		0% {
+			opacity: 1;
+		}
+		25% {
+			opacity: 0.7;
+		}
+		45% {
+			opacity: 0;
+		}
+		55% {
+			opacity: 0;
+		}
+		75% {
+			opacity: 0.7;
+		}
+		100% {
+			opacity: 1;
+		}
+	}
+
+	.pie.flashing:after {
+		opacity: 0;
+	}
+	.pie.flashing:before {
+		animation: flash 1s infinite;
+	}
+
 	.ring {
 		position: relative;
 		width: var(--width);

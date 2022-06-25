@@ -1,29 +1,51 @@
 import { browser } from '$app/env';
 import { writable } from 'svelte/store';
 
-const defaultTurnLength = 300;
-const defaultPlayers = [
-	{ id: Date.now(), name: '' },
-	{ id: Date.now() + 1, name: '' }
-];
-
-const initialTurnLength = browser
-	? +window.localStorage.getItem('turnLength') ?? defaultTurnLength
-	: defaultTurnLength;
-const initialPlayers = browser
-	? JSON.parse(window.localStorage.getItem('players')) ?? defaultPlayers
-	: defaultPlayers;
-
-export const turnLength = writable(initialTurnLength);
-export const players = writable(initialPlayers);
-
-turnLength.subscribe((value) => {
-	if (browser) {
-		window.localStorage.setItem('turnLength', value.toString());
-	}
+export const settings = createLocalStorageStore('settings', {
+	turnLength: 60_000,
+	muteAlarm: false,
+	players: [
+		{ id: Date.now(), name: 'Jack' },
+		{ id: Date.now() + 1, name: 'Jill' }
+	]
 });
-players.subscribe((value) => {
-	if (browser) {
-		window.localStorage.setItem('players', JSON.stringify(value));
+
+export function createLocalStorageStore<T>(
+	key: string,
+	defaultValue: T,
+	getter = (valueInStorage: string) => {
+		return JSON.parse(valueInStorage);
+	},
+	setter = (valueToStore: unknown) => {
+		return JSON.stringify(valueToStore);
 	}
-});
+): SvelteStore<T> {
+	let initialValue;
+
+	try {
+		const valueInStorage = localStorage.getItem(key);
+
+		if (valueInStorage) {
+			initialValue = getter(valueInStorage);
+		} else {
+			initialValue = defaultValue;
+		}
+	} catch (error) {
+		initialValue = defaultValue;
+
+		console.log('Malformed data found in localStorage, resetting to default');
+		if (browser) {
+			window.localStorage.setItem(key, setter(defaultValue));
+		}
+	}
+
+	const store = writable(initialValue);
+
+	store.subscribe((value) => {
+		if (browser) {
+			window.localStorage.setItem(key, setter(value));
+		}
+	});
+
+	return store;
+}
