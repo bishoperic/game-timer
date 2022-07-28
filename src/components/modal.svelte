@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { fly, fade } from 'svelte/transition';
 	import { XIcon } from 'svelte-feather-icons';
@@ -6,6 +6,7 @@
 	const dispatch = createEventDispatcher();
 
 	let previousState = false;
+
 	export let open = false;
 	export let title = '';
 
@@ -30,14 +31,17 @@
 
 {#if open}
 	<div class="background" transition:fade={{ duration: 200 }} on:click={modal.hide} />
-	<div class="modal-container">
+	<dialog class="modal-container">
 		<div class="modal" transition:fly={{ y: 75 }}>
 			<div class="modal-header">
 				<h2>{title}</h2>
+
+				<!-- svelte-ignore a11y-autofocus -->
 				<button
 					on:click={() => {
 						open = false;
 					}}
+					autofocus
 				>
 					<XIcon size="28" />
 				</button>
@@ -46,7 +50,7 @@
 				<slot />
 			</div>
 		</div>
-	</div>
+	</dialog>
 {/if}
 
 <style>
@@ -59,6 +63,10 @@
 		z-index: 1;
 
 		background-color: rgba(1, 4, 9, 0.8);
+	}
+	dialog {
+		border: none;
+		background-color: transparent;
 	}
 	.modal-container {
 		position: absolute;
