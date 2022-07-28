@@ -105,8 +105,15 @@
 		border-radius: calc(var(--border-radius) / 2);
 		padding: 0.125rem;
 		margin-left: auto;
+		position: relative;
 	}
-	.modal-header button:hover,
+	.modal-header button:hover::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background-color: rgba(255, 255, 255, 0.1);
+	}
 	.modal-header button:focus {
 		border-color: var(--color-highlight);
 	}
