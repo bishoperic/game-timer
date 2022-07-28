@@ -165,7 +165,7 @@
 	<PieProgressBar
 		bind:value={timer.time}
 		bind:max={$settings.turnLength}
-		width="400px"
+		width="var(--timer-width)"
 		fontSize="100px"
 		borderThickness="16px"
 		color={!timer.ended ? 'var(--color-highlight)' : 'red'}
@@ -213,6 +213,13 @@
 		flex-direction: column;
 		align-items: center;
 		gap: 0.5rem;
+
+		--timer-width: 300px;
+	}
+	@media (min-width: 450px) {
+		main {
+			--timer-width: 400px;
+		}
 	}
 
 	header {

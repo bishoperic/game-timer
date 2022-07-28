@@ -140,7 +140,13 @@
 		border-radius: calc(var(--border-radius) / 2);
 		font-size: 1.25rem;
 		line-height: 1.25;
-		width: 15rem;
+		width: 10rem;
+	}
+
+	@media (min-width: 450px) {
+		input {
+			width: 15rem;
+		}
 	}
 
 	.player {
