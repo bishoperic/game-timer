@@ -280,6 +280,7 @@
 		border: var(--border);
 		margin-bottom: 1rem;
 		overflow: auto;
+		color: var(--color-text);
 	}
 	.list > *:not(:last-child) {
 		border-bottom: var(--border);
