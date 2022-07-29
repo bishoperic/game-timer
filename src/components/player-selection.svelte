@@ -1,6 +1,6 @@
 <script>
 	import { dndzone } from 'svelte-dnd-action';
-	import { PlusIcon, XCircleIcon } from 'svelte-feather-icons';
+	import { PlusIcon, XCircleIcon, XIcon } from 'svelte-feather-icons';
 
 	const dropTargetStyle = {};
 
@@ -78,7 +78,7 @@
 							players = players;
 						}}
 					>
-						<XCircleIcon size="28" />
+						<XIcon size="24" />
 					</button>
 				</div>
 			</div>
@@ -97,14 +97,7 @@
 		border-bottom: var(--border);
 		background-color: var(--color-secondary);
 	}
-	.header button {
-		border-color: transparent;
-		color: var(--color-text-muted);
-	}
-	.header button:hover,
-	.header button:focus {
-		border-color: var(--color-highlight);
-	}
+
 	.header > * {
 		margin-left: auto;
 	}
@@ -117,6 +110,19 @@
 	.add-player {
 		border-radius: calc(var(--border-radius) / 2);
 		padding: 0.125rem;
+		border-color: transparent;
+		color: var(--color-text-muted);
+		position: relative;
+	}
+	.add-player:hover::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background-color: rgba(255, 255, 255, 0.1);
+	}
+	.add-player:focus {
+		border-color: var(--color-highlight);
 	}
 
 	.list {
@@ -140,7 +146,13 @@
 		border-radius: calc(var(--border-radius) / 2);
 		font-size: 1.25rem;
 		line-height: 1.25;
-		width: 15rem;
+		width: 10rem;
+	}
+
+	@media (min-width: 450px) {
+		input {
+			width: 15rem;
+		}
 	}
 
 	.player {
@@ -155,7 +167,20 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 0;
-		border: none;
+		padding: 4px;
+		position: relative;
+		border-radius: calc(var(--border-radius) / 2);
+		border-color: transparent;
+		color: var(--color-text-muted);
+	}
+	.player button:hover::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background-color: rgba(255, 255, 255, 0.1);
+	}
+	.player button:focus {
+		border-color: var(--color-highlight);
 	}
 </style>

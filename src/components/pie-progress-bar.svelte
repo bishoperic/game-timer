@@ -44,7 +44,7 @@
 		--font-size: 24px;
 
 		width: var(--width);
-		aspect-ratio: 1;
+		height: var(--width);
 		position: relative;
 		display: inline-grid;
 		margin: 0;
@@ -111,7 +111,7 @@
 	.ring {
 		position: relative;
 		width: var(--width);
-		aspect-ratio: 1;
+		height: var(--width);
 	}
 	.ring:before {
 		content: '';

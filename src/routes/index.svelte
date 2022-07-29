@@ -165,7 +165,7 @@
 	<PieProgressBar
 		bind:value={timer.time}
 		bind:max={$settings.turnLength}
-		width="400px"
+		width="var(--timer-width)"
 		fontSize="100px"
 		borderThickness="16px"
 		color={!timer.ended ? 'var(--color-highlight)' : 'red'}
@@ -181,14 +181,13 @@
 				settingsModal.show();
 			}}
 		>
-			<SettingsIcon size="60" />
+			<SettingsIcon size="56" />
 		</button>
 
 		<button
 			on:click={() => {
 				timer.toggle();
 			}}
-			style="padding-left: 0.75rem;"
 		>
 			{#if timer.ticking}
 				<PauseIcon size="64" />
@@ -199,7 +198,7 @@
 			{/if}
 		</button>
 
-		<button on:click={nextPlayer}><SkipForwardIcon size="64" /> </button>
+		<button on:click={nextPlayer}><SkipForwardIcon size="56" /> </button>
 	</menu>
 </main>
 
@@ -213,6 +212,13 @@
 		flex-direction: column;
 		align-items: center;
 		gap: 0.5rem;
+
+		--timer-width: 300px;
+	}
+	@media (min-width: 450px) {
+		main {
+			--timer-width: 400px;
+		}
 	}
 
 	header {
@@ -240,19 +246,31 @@
 		list-style-type: none;
 		margin: 1rem 0 0;
 		padding: 0.25rem 0.5rem;
-
-		border: var(--border);
-		border-radius: var(--border-radius);
+		gap: 1rem;
 	}
 	menu button {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		aspect-ratio: 1;
+		color: var(--color-text);
+		background-color: rgb(157 182 212 / 9%);
 
-		padding: 0.25rem;
+		padding: 10px;
 		line-height: 1;
-		border: none;
+		border-color: transparent;
+		border-radius: var(--border-radius);
+		position: relative;
+	}
+	menu button:hover::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background-color: rgba(255, 255, 255, 0.1);
+	}
+	menu button:focus {
+		border-color: var(--color-highlight);
 	}
 
 	.list {
@@ -262,6 +280,7 @@
 		border: var(--border);
 		margin-bottom: 1rem;
 		overflow: auto;
+		color: var(--color-text);
 	}
 	.list > *:not(:last-child) {
 		border-bottom: var(--border);
