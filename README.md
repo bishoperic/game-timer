@@ -1,4 +1,7 @@
-# create-svelte
+# Game Timer
+A timer web app, built to help make those long board games go just a little bit faster. I initially created this because I could not find a suitable existing tool. In the process of developing this though I did find some things that would work, but I also found that their presentation and user experience could be unappealing and confusing, which encouraged me to iterate and really try to find a good design. There are still more features I want to add, but they need to be carefully considered and iterated on to serve the overall design and provide an excellent user experience.
+
+---
 
 Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte);
 
