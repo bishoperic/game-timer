@@ -1,4 +1,4 @@
-import { browser } from '$app/env';
+import { onMount } from 'svelte';
 import { writable } from 'svelte/store';
 
 export const settings = createLocalStorageStore('settings', {
@@ -19,7 +19,7 @@ export function createLocalStorageStore<T>(
 	setter = (valueToStore: unknown) => {
 		return JSON.stringify(valueToStore);
 	}
-): SvelteStore<T> {
+) {
 	let initialValue;
 
 	try {
@@ -34,15 +34,16 @@ export function createLocalStorageStore<T>(
 		initialValue = defaultValue;
 
 		console.log('Malformed data found in localStorage, resetting to default');
-		if (browser) {
+		if (typeof window !== 'undefined') {
 			window.localStorage.setItem(key, setter(defaultValue));
 		}
 	}
 
 	const store = writable(initialValue);
 
+
 	store.subscribe((value) => {
-		if (browser) {
+		if (typeof window !== 'undefined') {
 			window.localStorage.setItem(key, setter(value));
 		}
 	});
